@@ -17,7 +17,7 @@ mutable struct Paire
 end
 
 function read_instance()
-    open("entry1.txt") do f
+    open("test/entry1.txt") do f
     n = parse(Int, readline(f));
     v = parse.(Int, split(readline(f)))
     w = parse.(Int, split(readline(f)))
