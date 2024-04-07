@@ -4,14 +4,17 @@
 # - On trie les objets par "utilité" décroissante (valeur/cout)
 # - On parcours ces objets de manière décroissante en les prennants s'ils ne font pas dépasser le poid max
 
+
+# IMPORTS
+include("instance.jl")
+
+
 # FUNCTIONS
 function glouton(inst::Instance)
     # ENTREE : Instance
-    # SORTIE : Paire(tableau, valeur) ; une solution assez bien calculée rapidement
+    # SORTIE : Paire(tableau d'entiers, valeur) ; une solution assez bien calculée rapidement
 
-    coeff_utilite = [Paire(i, inst.v[i]/inst.w[i]) for i in 1:inst.n]
-    sort!(coeff_utilite, lt=snd_compare)
-    coeff_utilite = [p.fst for p in coeff_utilite] # on enleve les coefficients valeur/cout
+    coeff_utilite = sort_instance(inst)
 
     solution = [0 for _ in 1:inst.n]
     poid = 0
@@ -26,6 +29,5 @@ function glouton(inst::Instance)
         end
     end
 
-    return Paire(solution, valeur)
-
+    Paire(solution, valeur)
 end

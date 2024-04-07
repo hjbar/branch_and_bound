@@ -11,6 +11,7 @@ mutable struct Paire
     snd
 end
 
+
 # FUNCTIONS
 function read_instance()
     open("test/entry1.txt") do f
@@ -21,6 +22,5 @@ function read_instance()
     w_max = parse(Int, readline(f))
 
     Instance(n, v, w, w_max)
-
     end
 end
