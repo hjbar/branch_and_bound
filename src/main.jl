@@ -7,13 +7,7 @@ include("utils.jl")
 
 # FUNCTIONS
 function main()
-    inst = read_instance()
-
-    sol = glouton(inst)
-    print_solution(sol)
-
-    sol = fayard_plateau(inst)
-    print_solution(sol)
+    test_instance("test/instance_test.dat")
 end
 
 

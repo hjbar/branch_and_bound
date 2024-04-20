@@ -13,14 +13,40 @@ end
 
 
 # FUNCTIONS
-function read_instance()
-    open("test/entry1.txt") do f
+function parse_instance(file)
+    open(file) do f
+        tab = []
 
-    n = parse(Int, readline(f));
-    v = parse.(Int, split(readline(f)))
-    w = parse.(Int, split(readline(f)))
-    w_max = parse(Int, readline(f))
+        for l in eachline(f)
+            push!(tab, parse.(Int, split(l)))
+        end
 
-    Instance(n, v, w, w_max)
+        n = tab[1][1]
+        d = tab[1][2]
+        sol = tab[1][3]
+
+        v = tab[2]
+        w = tab[3]
+
+        w_max = tab[d + 3][1]
+
+        Paire(sol, Instance(n, v, w, w_max))
     end
+end
+
+function test_instance(file)
+    result = parse_instance(file)
+    sol = result.fst
+    inst = result.snd
+
+    println("Glouton :")
+    res = glouton(inst)
+    print_solution(res)
+
+    println("\nFayard&Plateau :")
+    res = fayard_plateau(inst)
+    print_solution(res)
+
+    println("\nSolution : ", sol)
+    println("\n")
 end
