@@ -1,4 +1,4 @@
-# DELCARATIONS
+# STRUCTS
 struct Instance
     n      # nombre    d'objets
     v      # valeurs des objets
@@ -32,21 +32,4 @@ function parse_instance(file)
 
         Paire(sol, Instance(n, v, w, w_max))
     end
-end
-
-function test_instance(file)
-    result = parse_instance(file)
-    sol = result.fst
-    inst = result.snd
-
-    println("Glouton :")
-    res = glouton(inst)
-    print_solution(res)
-
-    println("\nFayard&Plateau :")
-    res = fayard_plateau(inst)
-    print_solution(res)
-
-    println("\nSolution : ", sol)
-    println("\n")
 end

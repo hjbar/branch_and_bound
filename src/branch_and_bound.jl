@@ -5,18 +5,10 @@ using HiGHS
 
 const BB = Bonobo
 
-include("../utils.jl")
+include("instance.jl")
 
 
-# CREATE MODEL
-m = Model(HiGHS.Optimizer)
-set_optimizer_attribute(m, "log_to_console", false)
-@variable(m, x[1:4], Bin)
-@constraint(m, 3x[1]+7x[2]+9x[3]+6x[4] <= 17)
-@objective(m, Max, 8x[1]+18x[2]+20x[3]+11x[4])
-
-
-# FUNCTIONS
+# STRUCTS
 mutable struct MIPNode <: AbstractNode
     std :: BnBNodeInfo
     lbs :: Vector{Float64}
@@ -25,6 +17,40 @@ mutable struct MIPNode <: AbstractNode
 end
 
 
+# FUNCTIONS (for model)
+function inst_constrait(x, inst::Instance)
+    s = 0
+    for i in 1:length(x)
+        s = s + inst.w[i]*x[i]
+    end
+    return s
+end
+
+function inst_objective(x, inst::Instance)
+    s = 0
+    for i in 1:length(x)
+        s = s + inst.v[i]*x[i]
+    end
+    return s
+end
+
+function create_model(inst::Instance)
+    m = Model(HiGHS.Optimizer)
+    set_optimizer_attribute(m, "log_to_console", false)
+
+    @variable(m, x[1:inst.n], Bin)
+    @constraint(m, inst_constrait(x, inst) <= inst.w_max)
+    @objective(m, Max, inst_objective(x, inst))
+
+    return m
+end
+
+result = parse_instance("test/instance_test.dat")
+inst = result.snd
+m = create_model(inst)
+
+
+# FUNCTIONS (for branch&bound)
 function BB.get_branching_indices(model::JuMP.Model)
     # every variable should be discrete
     vis = MOI.get(model, MOI.ListOfVariableIndices())
@@ -114,26 +140,26 @@ function BB.get_branching_nodes_info(tree::BnBTree{MIPNode, JuMP.Model}, node::M
 end
 
 
-# USE BONOBO
-bnb_model = BB.initialize(;
-    Node = MIPNode,
-    root = m,
-    sense = objective_sense(m) == MOI.MAX_SENSE ? :Max : :Min
-)
+# Branch & Bound
+function branch_and_bound(inst::Instance)
+    m = create_model(inst)
 
-BB.set_root!(bnb_model, (
-    #lbs = [1, 1, 0, 1],
-    #ubs = [1.0, 1.0, 0.778, 0.0],
-    lbs = zeros(length(x)),
-    ubs = fill(Inf, length(x)),
-    status = MOI.OPTIMIZE_NOT_CALLED
-))
+    bnb_model = BB.initialize(;
+        Node = MIPNode,
+        root = m,
+        sense = objective_sense(m) == MOI.MAX_SENSE ? :Max : :Min
+    )
 
-BB.optimize!(bnb_model)
+    BB.set_root!(bnb_model, (
+        lbs = [0.0, 0.0, 0.0, 0.0],
+        ubs = [1.0, 1.0, 1.0, 1.0],
+        status = MOI.OPTIMIZE_NOT_CALLED
+    ))
 
+    BB.optimize!(bnb_model)
 
-# SOLUTIONS
-sol_vars = BB.get_solution(bnb_model)
-sol_f = BB.get_objective_value(bnb_model)
+    sol_vars = BB.get_solution(bnb_model)
+    sol_f = BB.get_objective_value(bnb_model)
 
-print_solution(Paire(sol_vars, sol_f))
+    return Paire(sol_vars, sol_f)
+end

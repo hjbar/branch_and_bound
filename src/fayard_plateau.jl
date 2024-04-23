@@ -9,6 +9,7 @@
 
 # IMPORTS
 include("instance.jl")
+include("utils.jl")
 
 
 # FUNCTIONS
