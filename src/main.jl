@@ -29,7 +29,7 @@ function test_instance(file)
 end
 
 function main()
-    test_instance("test/instance_test.dat")
+    test_instance("../test/instance_test.dat")
 end
 
 
