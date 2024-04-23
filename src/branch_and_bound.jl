@@ -6,6 +6,8 @@ using HiGHS
 const BB = Bonobo
 
 include("instance.jl")
+include("glouton.jl")
+include("fayard_plateau.jl")
 
 
 # STRUCTS
@@ -26,6 +28,7 @@ function inst_constrait(x, inst::Instance)
     return s
 end
 
+
 function inst_objective(x, inst::Instance)
     s = 0
     for i in 1:length(x)
@@ -33,6 +36,7 @@ function inst_objective(x, inst::Instance)
     end
     return s
 end
+
 
 function create_model(inst::Instance)
     m = Model(HiGHS.Optimizer)
@@ -44,10 +48,6 @@ function create_model(inst::Instance)
 
     return m
 end
-
-result = parse_instance("test/instance_test.dat")
-inst = result.snd
-m = create_model(inst)
 
 
 # FUNCTIONS (for branch&bound)
@@ -140,7 +140,7 @@ function BB.get_branching_nodes_info(tree::BnBTree{MIPNode, JuMP.Model}, node::M
 end
 
 
-# Branch & Bound
+# BRANCH & BOUND
 function branch_and_bound(inst::Instance)
     m = create_model(inst)
 
