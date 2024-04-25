@@ -143,15 +143,13 @@ end
 
 ######## lower bound (greedy one) #######
 function get_lbs(inst::Instance)
-    include("glouton.jl")
-    first.(glouton(inst))
+    glouton(inst).fst
 end
 #########################################
 
 #### upper bound (fayard et plateau) ####
 function get_ubs(inst::Instance)
-    include("fayard_plateau")
-    first.(fayard_plateau(inst))
+    fayard_plateau(inst).fst
 end
 #########################################
 
@@ -169,10 +167,8 @@ function branch_and_bound(inst::Instance)
     )
 
     BB.set_root!(bnb_model, (
-        lbs = [1.0, 1.0, 0.0, 1.0],
-        ubs = [1.0, 1.0, 0.78, 0.0],
-        # lbs = get_lbs(inst),
-        # ubs = get_ubs(inst),
+        lbs = get_lbs(inst),
+        ubs = get_ubs(inst),
         status = MOI.OPTIMIZE_NOT_CALLED
     ))
 
