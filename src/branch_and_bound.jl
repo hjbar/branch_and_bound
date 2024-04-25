@@ -18,6 +18,13 @@ mutable struct MIPNode <: AbstractNode
     status :: MOI.TerminationStatusCode
 end
 
+mutable struct Bounds
+    lower :: Float64
+    upper :: Float64
+end
+
+bounds = Bounds(0.0, Inf)
+
 
 # FUNCTIONS (for model)
 function inst_constrait(x, inst::Instance)
@@ -136,6 +143,7 @@ function BB.get_branching_nodes_info(tree::BnBTree{MIPNode, JuMP.Model}, node::M
         ubs = copy(node.ubs),
         status = MOI.OPTIMIZE_NOT_CALLED,
     ))
+
     return node_info
 end
 
@@ -143,13 +151,13 @@ end
 
 ######## lower bound (greedy one) #######
 function get_lbs(inst::Instance)
-    glouton(inst).fst
+    glouton(inst).snd
 end
 #########################################
 
 #### upper bound (fayard et plateau) ####
 function get_ubs(inst::Instance)
-    fayard_plateau(inst).fst
+    fayard_plateau(inst).snd
 end
 #########################################
 
@@ -159,6 +167,7 @@ end
 # BRANCH & BOUND
 function branch_and_bound(inst::Instance)
     m = create_model(inst)
+    bounds = Bounds(get_lbs(inst), get_ubs(inst))
 
     bnb_model = BB.initialize(;
         Node = MIPNode,
@@ -167,8 +176,8 @@ function branch_and_bound(inst::Instance)
     )
 
     BB.set_root!(bnb_model, (
-        lbs = get_lbs(inst),
-        ubs = get_ubs(inst),
+        lbs = zeros(inst.n),
+        ubs = ones(inst.n),
         status = MOI.OPTIMIZE_NOT_CALLED
     ))
 
