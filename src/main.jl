@@ -30,6 +30,12 @@ end
 
 function main()
     test_instance("test/instance_test.dat")
+
+    test_instance("instances/sac94/pb/pb2.dat")
+
+    #test_instance("instances/sac94/pb/pb4.dat")
+
+    #test_instance("instances/sac94/pet/pet2.dat")
 end
 
 
