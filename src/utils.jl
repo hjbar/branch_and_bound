@@ -3,14 +3,16 @@ include("instance.jl")
 
 
 # FUNCTIONS
-function print_solution(paire::Paire)
+function print_solution(paire::Paire, detailed)
     sol = paire.fst
     valeur = paire.snd
 
-    print("solution :")
+    if detailed
+        print("solution :")
 
-    for el in sol
-        print(" ", el)
+        for el in sol
+            print(" ", el)
+        end
     end
 
     println("\nvaleur : ", valeur)
