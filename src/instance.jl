@@ -6,11 +6,6 @@ struct Instance
     w_max  # poids maximal
 end
 
-mutable struct Paire
-    fst
-    snd
-end
-
 
 # FUNCTIONS
 function parse_instance(file)

@@ -2,6 +2,13 @@
 include("instance.jl")
 
 
+# STRUCTS
+mutable struct Paire
+    fst
+    snd
+end
+
+
 # FUNCTIONS
 function print_solution(paire::Paire, detailed)
     sol = paire.fst
