@@ -81,10 +81,10 @@ function BB.evaluate_node!(tree::BnBTree{MIPNode, JuMP.Model}, node::MIPNode)
 
     # On récupère la solution
     obj_val = objective_value(m)
+    node.ub = obj_val
 
     # On regarde si la solution est entière, si oui on renvoie la même valeur les deux bornes
     if all(BB.is_approx_feasible.(tree, value.(vars)))
-        node.ub = obj_val
 
         # On met à jour si on a une meilleure solution
         if bounds.lower < obj_val
@@ -99,7 +99,6 @@ function BB.evaluate_node!(tree::BnBTree{MIPNode, JuMP.Model}, node::MIPNode)
 
     # On renvoie les bornes du noeud
     node.lb = bounds.lower
-    node.ub = bounds.upper
     return node.lb, node.ub
 end
 
